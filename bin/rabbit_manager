@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+
+require_once "../vendor/autoload.php";
+
+use Symfony\Component\Console\Application;
+use Cto\Rabbit\Command\DeclareAllCommand;
+use Cto\Rabbit\Command\DeclareBindingCommand;
+use Cto\Rabbit\Command\DeclareExchangeCommand;
+use Cto\Rabbit\Command\DeclareQueueCommand;
+use Cto\Rabbit\Command\DeleteAllCommand;
+use Cto\Rabbit\Command\DeleteBindingCommand;
+use Cto\Rabbit\Command\DeleteExchangeCommand;
+use Cto\Rabbit\Command\DeleteQueueCommand;
+use Cto\Rabbit\Command\PurgeQueueCommand;
+
+$app = new Application("rabbit queue manager", "0.1.0");
+$app->add(new DeclareAllCommand());
+$app->add(new DeclareBindingCommand());
+$app->add(new DeclareExchangeCommand());
+$app->add(new DeclareQueueCommand());
+$app->add(new DeleteAllCommand());
+$app->add(new DeleteBindingCommand());
+$app->add(new DeleteExchangeCommand());
+$app->add(new DeleteQueueCommand());
+$app->add(new PurgeQueueCommand());
+$app->run();

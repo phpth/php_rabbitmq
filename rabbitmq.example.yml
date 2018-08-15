@@ -1,0 +1,55 @@
+rabbitmq:
+  default_connection: connection1
+  connections:
+    - connection1:
+        host: ~
+        port: ~
+        user: ~
+        password: ~
+        vhost: ~
+        connection_timeout: ~
+        read_write_timeout: ~
+        heartbeat: ~
+
+        queues:
+          - queue1:
+              name: ~
+              passive: ~
+              durable: ~
+              exclusive: ~
+              auto_delete: ~
+              nowait: ~
+              arguments: ~
+              ticket: ~
+        
+        exchanges:
+          - exchange1:
+              name: ~
+              type: ~
+              passive: ~
+              durable: ~
+              auto_delete: ~
+              internal: ~
+              nowait: ~
+              arguments: ~
+
+        bindings:
+          - binding1:
+              queue: ~
+              exchange: ~
+              routing_key: ~
+
+        consumers:
+          - consumer1:
+              queue: ~
+              callback: ~
+              qos_prefetch_size: ~
+              qos_prefetch_count: ~
+              no_ack: ~
+
+        publishers:
+          - publisher1:
+              routing_key: ~
+              exchange: ~
+              delivery_mode: ~
+

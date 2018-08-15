@@ -1,0 +1,25 @@
+{
+    "name": "51cto/rabbit",
+    "description": "队列操作简单封装",
+    "type": "library",
+    "authors": [
+        {
+            "name": "xiakai",
+            "email": "xiakai@51cto.com"
+        }
+    ],
+    "require": {
+        "php-amqplib/php-amqplib": "^2.7",
+        "symfony/yaml": "^3.4",
+        "symfony/console": "^3.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cto\\Rabbit\\": "./src"
+        }
+    },
+    "bin": ["./bin/queue_manager"],
+    "extra": {
+        "rabbitmq_config_file": "/home/xiakai/www/video/edu_center/"
+    }
+}
