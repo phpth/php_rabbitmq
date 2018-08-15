@@ -24,10 +24,10 @@ class DeclareBindingCommand extends RabbitCommand
     {
         $exchange = $input->getArgument(Message::BINDING_PARAMETER);
         $connection = $input->getArgument(Message::CONNECTION_PARAMETER);
-        $this->info(Message::START);
-        $this->info(Message::START_DECLARING_BINDING);
+        $output->writeln($this->info(Message::START));
+        $output->writeln($this->info(Message::START_DECLARING_BINDING));
         RabbitHelper::manageBinding($exchange, $connection);
-        $this->info(Message::SUCCESS);
+        $output->writeln($this->info(Message::SUCCESS));
     }
 }
 

@@ -24,10 +24,10 @@ class DeclareExchangeCommand extends RabbitCommand
     {
         $exchange = $input->getArgument(Message::EXCHANGE_PARAMETER);
         $connection = $input->getArgument(Message::CONNECTION_PARAMETER);
-        $this->info(Message::START);
-        $this->info(Message::START_DECLARING_EXCHANGE);
+        $output->writeln($this->info(Message::START));
+        $output->writeln($this->info(Message::START_DECLARING_EXCHANGE));
         RabbitHelper::manageExchange($exchange, $connection);
-        $this->info(Message::SUCCESS);
+        $output->writeln($this->info(Message::SUCCESS));
     }
 }
 

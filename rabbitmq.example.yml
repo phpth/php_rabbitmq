@@ -1,55 +1,56 @@
 rabbitmq:
   default_connection: connection1
   connections:
-    - connection1:
-        host: ~
-        port: ~
-        user: ~
-        password: ~
-        vhost: ~
-        connection_timeout: ~
-        read_write_timeout: ~
-        heartbeat: ~
+    connection1:
+      host: localhost
+      port: 5672
+      user: guest
+      password: guest
+      vhost: /
+      connection_timeout: 30
+      read_write_timeout: 30
+      heartbeat: 10
 
-        queues:
-          - queue1:
-              name: ~
-              passive: ~
-              durable: ~
-              exclusive: ~
-              auto_delete: ~
-              nowait: ~
-              arguments: ~
-              ticket: ~
-        
-        exchanges:
-          - exchange1:
-              name: ~
-              type: ~
-              passive: ~
-              durable: ~
-              auto_delete: ~
-              internal: ~
-              nowait: ~
-              arguments: ~
+      queues:
+          q1:
+            name: q1
+            passive: false
+            durable: true
+            exclusive: false
+            auto_delete: false
+            nowait: ~
+            arguments: ~
+            ticket: ~
+      
+      exchanges:
+          e1:
+            name: e1
+            type: direct
+            passive: false
+            durable: true
+            auto_delete: false
+            internal: ~
+            nowait: ~
+            arguments: ~
+            ticket: ~
 
-        bindings:
-          - binding1:
-              queue: ~
-              exchange: ~
-              routing_key: ~
+      bindings:
+          binding1:
+            queue: q1
+            exchange: e1
+            routing_key: hello-world
 
-        consumers:
-          - consumer1:
-              queue: ~
-              callback: ~
-              qos_prefetch_size: ~
-              qos_prefetch_count: ~
-              no_ack: ~
+      consumers:
+          consumer1:
+            queue: ~
+            callback: ~
+            qos_prefetch_size: ~
+            qos_prefetch_count: ~
+            no_ack: ~
 
-        publishers:
-          - publisher1:
-              routing_key: ~
-              exchange: ~
-              delivery_mode: ~
+      publishers:
+          publisher1:
+            routing_key: hello-world
+            exchange: e1
+            delivery_mode: 2
 

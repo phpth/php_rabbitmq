@@ -24,9 +24,9 @@ class DeclareQueueCommand extends RabbitCommand
     {
         $queue = $input->getArgument(Message::QUEUE_PARAMETER);
         $connection = $input->getArgument(Message::CONNECTION_PARAMETER);
-        $this->info(Message::START);
-        $this->info(Message::START_DECLARING_QUEUE);
+        $output->writeln($this->info(Message::START));
+        $output->writeln($this->info(Message::START_DECLARING_QUEUE));
         RabbitHelper::manageQueue($queue, $connection);
-        $this->info(Message::SUCCESS);
+        $output->writeln($this->info(Message::SUCCESS));
     }
 }

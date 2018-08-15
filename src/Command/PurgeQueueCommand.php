@@ -23,9 +23,9 @@ class PurgeQueueCommand extends RabbitCommand
     {
         $queue = $input->getArgument(Message::QUEUE_PARAMETER);
         $connection = $input->getArgument(Message::CONNECTION_PARAMETER);
-        $this->info(Message::START);
-        $this->info(Message::START_PURGING_QUEUE);
+        $output->writeln($this->info(Message::START));
+        $output->writeln($this->info(Message::START_PURGING_QUEUE));
         RabbitHelper::manageQueue($queue, $connection, false, true);
-        $this->info(Message::SUCCESS);
+        $output->writeln($this->info(Message::SUCCESS));
     }
 }

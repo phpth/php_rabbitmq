@@ -17,6 +17,7 @@ class RabbitHelper
     public static $defaultConnectionConfig = [
         'host' => 'localhost',
         'port' => 5672,
+        'vhost' => '/',
         'user' => 'guest',
         'password' => 'guest',
         'connection_timeout' => 30,
@@ -41,7 +42,8 @@ class RabbitHelper
         'auto_delete' => false,
         'internal' => false,
         'nowait' => false,
-        'arguments' => []
+        'arguments' => [],
+        'ticket' => null
     ];
 
     public static $defaultBindingConfig = [
@@ -64,28 +66,27 @@ class RabbitHelper
 
     public static function getConnection($name = null)
     {
-        $name or $name = self::$config['rabbit']['default_connection'];
-        $connectionArray = self::$config['rabbit']['connections'];
-        if (array_key_exists($name, $connectionArray)) {
+        $connectionArray = self::$config['rabbitmq']['connections'];
+        if (!array_key_exists($name, $connectionArray)) {
             throw new \Exception("missing connection");
         }
         $connectionDetail = $connectionArray[$name];
         try {
             $conn = new AMQPStreamConnection(
-                $connectionDetail['host'] ? : self::$defaultConfig['host'],
-                $connectionDetail['port'] ? : self::$defaultConfig['port'], 
-                $connectionDetail['user'] ? : self::$defaultConfig['user'], 
-                $connectionDetail['password'] ? : self::$defaultConfig['password'], 
-                $connectionDetail['vhost'] ? : self::$defaultConfig['vhost'],
+                $connectionDetail['host'] ? : self::$defaultConnectionConfig['host'],
+                $connectionDetail['port'] ? : self::$defaultConnectionConfig['port'], 
+                $connectionDetail['user'] ? : self::$defaultConnectionConfig['user'], 
+                $connectionDetail['password'] ? : self::$defaultConnectionConfig['password'], 
+                $connectionDetail['vhost'] ? : self::$defaultConnectionConfig['vhost'],
                 false,
                 'AMQPLAIN',
                 null,
                 'en_US',
-                $connectionDetail['connection_timeout'] ? : self::$defaultConfig['connection_timeout'],
-                $connectionDetail['read_write_timeout'] ? : self::$defaultConfig['read_write_timeout'],
+                $connectionDetail['connection_timeout'] ? : self::$defaultConnectionConfig['connection_timeout'],
+                $connectionDetail['read_write_timeout'] ? : self::$defaultConnectionConfig['read_write_timeout'],
                 null,
                 true,
-                $connectionDetail['heartbeat'] ? : self::$defaultConfig['heartbeat']
+                $connectionDetail['heartbeat'] ? : self::$defaultConnectionConfig['heartbeat']
             );
         } catch (\Exception $e) {
             return null;
@@ -96,8 +97,9 @@ class RabbitHelper
     public static function manageQueue($name = null, $connection = null, $isDelete = false, $isPurge = false)
     {
         self::checkConfigIsLoaded();
+        $connection or $connection = self::$config['rabbitmq']['default_connection'];
         $conn = self::getConnection($connection);
-        $queueArray = self::$config['queues'];
+        $queueArray = self::$config['rabbitmq']['connections'][$connection]['queues'];
         $declaringQueueArray = [];
         if ($name && !array_key_exists($name, $queueArray)) {
             throw new \Exception("queue not found");
@@ -131,8 +133,9 @@ class RabbitHelper
     public static function manageExchange($name = null, $connection = null, $isDelete = false)
     {
         self::checkConfigIsLoaded();
-        $conn = self::getConnection(connection);
-        $exchangeArray = self::$config['exchanges'];
+        $connection or $connection = self::$config['rabbitmq']['default_connection'];
+        $conn = self::getConnection($connection);
+        $exchangeArray = self::$config['rabbitmq']['connections'][$connection]['exchanges'];
         $declaringExchangeArray = [];
         if ($name && !array_key_exists($name, $exchangeArray)) {
             throw new \Exception("exchange not found");
@@ -162,8 +165,9 @@ class RabbitHelper
     public static function manageBinding($name = null, $connection = null, $isDelete = false)
     {
         self::checkConfigIsLoaded();
+        $connection or $connection = self::$config['rabbitmq']['default_connection'];
         $conn = self::getConnection($connection);
-        $bindingArray = self::$config['bindings'];
+        $bindingArray = self::$config['rabbitmq']['connections'][$connection]['bindings'];
         $declaringBindingArray = [];
         if ($name && !array_key_exists($name, $bindingArray)) {
             throw new \Exception("binding not found");
@@ -197,7 +201,7 @@ class RabbitHelper
 
     public static function locateRabbitConfigFile()
     {
-        $composerJsonPath = dirname(dirname(__FILE__)) . '/composer.json';
+        $composerJsonPath = dirname(dirname(dirname(__FILE__))) . '/composer.json';
         $composerJson = file_get_contents($composerJsonPath);;
         $composerInfo = json_decode($composerJson, true);
         return $composerInfo['extra']['rabbitmq_config_file'];
@@ -209,7 +213,7 @@ class RabbitHelper
         $producerInfo = self::extractPublisher($publisher);
         $conn = self::getConnection($producerInfo['connection']);
         $chan = $conn->channel();
-        $msg = new AMQPMessage($message, ['delivery_mode' => $producerInfo['producerr']['delivery_mode'] ? : 2]);
+        $msg = new AMQPMessage($message, ['delivery_mode' => $producerInfo['producer']['delivery_mode'] ? : 2]);
         $msg->set("application_headers", new AMQPTable($attribute));
         $chan->basic_publish($msg, $producerInfo['producer']['exchange'], $producerInfo['producer']['routing_key']);
         $chan->close();

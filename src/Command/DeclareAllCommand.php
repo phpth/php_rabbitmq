@@ -19,14 +19,14 @@ class DeclareAllCommand extends RabbitCommand
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->info(Message::START);
-        $this->info(Message::START_DECLARING_QUEUE);
+        $output->writeln($this->info(Message::START));
+        $output->writeln($this->info(Message::START_DECLARING_QUEUE));
         RabbitHelper::manageQueue();
-        $this->info(Message::START_DECLARING_EXCHANGE);
+        $output->writeln($this->info(Message::START_DECLARING_EXCHANGE));
         RabbitHelper::manageExchange();
-        $this->info(Message::START_DECLARING_BINDING);
+        $output->writeln($this->info(Message::START_DECLARING_BINDING));
         RabbitHelper::manageBinding();
-        $this->info(Message::SUCCESS);
+        $output->writeln($this->info(Message::SUCCESS));
     }
 }
 

@@ -23,9 +23,9 @@ class DeleteExchangeCommand extends RabbitCommand
     {
         $exchange = $input->getArgument(Message::EXCHANGE_PARAMETER);
         $connection = $input->getArgument(Message::CONNECTION_PARAMETER);
-        $this->info(Message::START);
-        $this->info(Message::START_DELETING_EXCHANGE);
+        $output->writeln($this->info(Message::START));
+        $output->writeln($this->info(Message::START_DELETING_EXCHANGE));
         RabbitHelper::manageExchange($exchange, $connection, true);
-        $this->info(Message::SUCCESS);
+        $output->writeln($this->info(Message::SUCCESS));
     }
 }

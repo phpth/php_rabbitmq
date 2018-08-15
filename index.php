@@ -2,6 +2,9 @@
 
 require_once "./vendor/autoload.php";
 
-define("RABBITMQ_CONFIG_FILE", realpath("./rabbitmq.example.yml"));
+use Cto\Rabbit\Publisher\Publisher;
 
-Publisher::init();
+
+for ($i = 0; $i < 100; $i++) {
+    Publisher::publish('publisher1', "hello world");
+}

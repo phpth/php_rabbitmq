@@ -23,9 +23,9 @@ class DeleteBindingCommand extends RabbitCommand
     {
         $binding = $input->getArgument(Message::BINDING_PARAMETER);
         $connection = $input->getArgument(Message::CONNECTION_PARAMETER);
-        $this->info(Message::START);
-        $this->info(Message::START_DELETING_BINDING);
+        $output->writeln($this->info(Message::START));
+        $output->writeln($this->info(Message::START_DELETING_BINDING));
         RabbitHelper::manageBinding($binding, $connection, true);
-        $this->info(Message::SUCCESS);
+        $output->writeln($this->info(Message::SUCCESS));
     }
 }

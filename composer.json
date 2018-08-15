@@ -20,6 +20,6 @@
     },
     "bin": ["./bin/queue_manager"],
     "extra": {
-        "rabbitmq_config_file": "/home/xiakai/www/video/edu_center/"
+        "rabbitmq_config_file": "/home/xiakai/www/php_rabbitmq/rabbitmq.example.yml"
     }
 }
