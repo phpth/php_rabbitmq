@@ -74,20 +74,20 @@ class RabbitHelper
         $connectionDetail = $connectionArray[$name];
         try {
             $conn = new AMQPStreamConnection(
-                $connectionDetail['host'] ? : self::$defaultConnectionConfig['host'],
-                $connectionDetail['port'] ? : self::$defaultConnectionConfig['port'], 
-                $connectionDetail['user'] ? : self::$defaultConnectionConfig['user'], 
-                $connectionDetail['password'] ? : self::$defaultConnectionConfig['password'], 
-                $connectionDetail['vhost'] ? : self::$defaultConnectionConfig['vhost'],
+                $connectionDetail['host'] !== null ? $connectionDetail['host'] : self::$defaultConnectionConfig['host'],
+                $connectionDetail['port'] !== null ? $connectionDetail['port'] : self::$defaultConnectionConfig['port'],
+                $connectionDetail['user'] !== null ? $connectionDetail['user'] : self::$defaultConnectionConfig['user'],
+                $connectionDetail['password'] !== null ? $connectionDetail['password'] : self::$defaultConnectionConfig['password'],
+                $connectionDetail['vhost'] !== null ? $connectionDetail['vhost'] : self::$defaultConnectionConfig['vhost'],
                 false,
                 'AMQPLAIN',
                 null,
                 'en_US',
-                $connectionDetail['connection_timeout'] ? : self::$defaultConnectionConfig['connection_timeout'],
-                $connectionDetail['read_write_timeout'] ? : self::$defaultConnectionConfig['read_write_timeout'],
+                $connectionDetail['connection_timeout'] !== null ? $connectionDetail['connection_timeout'] : self::$defaultConnectionConfig['connection_timeout'],
+                $connectionDetail['read_write_timeout'] !== null ? $connectionDetail['read_write_timeout'] : self::$defaultConnectionConfig['read_write_timeout'],
                 null,
                 true,
-                $connectionDetail['heartbeat'] ? : self::$defaultConnectionConfig['heartbeat']
+                $connectionDetail['heartbeat'] !== null ? $connectionDetail['heartbeat'] : self::$defaultConnectionConfig['heartbeat']
             );
         } catch (\Exception $e) {
             return null;
@@ -119,13 +119,13 @@ class RabbitHelper
             } else {
                 $chan->queue_declare(
                     $queue['name'],
-                    $queue['passive'] ? : self::$defaultQueueConfig['passive'],
-                    $queue['durable'] ? : self::$defaultQueueConfig['durable'],
-                    $queue['exclusive'] ? : self::$defaultQueueConfig['exclusive'],
-                    $queue['auto_delete'] ? : self::$defaultQueueConfig['auto_delete'],
-                    $queue['nowait'] ? : self::$defaultQueueConfig['nowait'],
-                    $queue['arguments'] ? : self::$defaultQueueConfig['arguments'],
-                    $queue['ticket'] ? : self::$defaultQueueConfig['ticket']
+                    $queue['passive'] !== null ? $queue['passive'] : self::$defaultQueueConfig['passive'],
+                    $queue['durable'] !== null ? $queue['durable'] : self::$defaultQueueConfig['durable'],
+                    $queue['exclusive'] !== null ? $queue['exclusive'] : self::$defaultQueueConfig['exclusive'],
+                    $queue['auto_delete'] !== null ? $queue['auto_delete'] : self::$defaultQueueConfig['auto_delete'],
+                    $queue['nowait'] !== null ? $queue['nowait'] : self::$defaultQueueConfig['nowait'],
+                    $queue['arguments'] !== null ? $queue['arguments'] : self::$defaultQueueConfig['arguments'],
+                    $queue['ticket'] !== null ? $queue['ticket'] : self::$defaultQueueConfig['ticket']
                 );
             }
         }
@@ -151,13 +151,13 @@ class RabbitHelper
             $isDelete === false ?
             $chan->exchange_declare(
                 $exchange['name'],
-                $exchange['type'] ? : self::$defaultExchangeConfig['type'],
-                $exchange['passive'] ? : self::$defaultExchangeConfig['passive'],
-                $exchange['durable'] ? : self::$defaultExchangeConfig['durable'],
-                $exchange['auto_delete'] ? : self::$defaultExchangeConfig['auto_delete'],
-                $exchange['nowait'] ? : self::$defaultExchangeConfig['nowait'],
-                $exchange['arguments'] ? : self::$defaultExchangeConfig['arguments'],
-                $exchange['ticket'] ? : self::$defaultExchangeConfig['ticket']
+                $exchange['type'] !== null ? $exchange['type'] : self::$defaultExchangeConfig['type'],
+                $exchange['passive'] !== null ? $exchange['passive'] : self::$defaultExchangeConfig['passive'],
+                $exchange['durable'] !== null ? $exchange['durable'] : self::$defaultExchangeConfig['durable'],
+                $exchange['auto_delete'] !== null ? $exchange['auto_delete'] : self::$defaultExchangeConfig['auto_delete'],
+                $exchange['nowait'] !== null ? $exchange['nowait'] : self::$defaultExchangeConfig['nowait'],
+                $exchange['arguments'] !== null ? $exchange['arguments'] : self::$defaultExchangeConfig['arguments'],
+                $exchange['ticket'] !== null ? $exchange['ticket'] : self::$defaultExchangeConfig['ticket']
             ) : 
             $chan->exchange_delete($exchange['name']);
         }
