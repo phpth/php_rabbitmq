@@ -32,6 +32,8 @@ class Message
 
     const CONNECTION = "connection";
 
+    const CONSUMER = "consumer";
+
     const FORCE = "force to delete";
 
     const FORCE_WARNING = "use force option to delete all queues";
@@ -43,6 +45,8 @@ class Message
     const BINDING_PARAMETER = "routing_key";
 
     const CONNECTION_PARAMETER = "connection";
+
+    const CONSUMER_PARAMETER = "consumer";
 
     const FORCE_PARAMETER = "force";
 
@@ -81,4 +85,9 @@ class Message
     const PURGE_QUEUE_COMMAND = "rabbit:purge-queue";
 
     const PURGE_QUEUE_DESCRIPTION = "purge queues";
+
+    const CONSUME_COMMAND = "rabbit:consume-queue";
+
+    const CONSUME_DESCRIPTION = "consume from queue";
+
 }
