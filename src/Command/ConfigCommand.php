@@ -16,7 +16,7 @@ class ConfigCommand extends RabbitCommand
         $this->addArgument("config_file_path", InputArgument::REQUIRED, "配置参数");
     }
 
-    public function execute(InputInterface $input, OutputInterface $out)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         $config = $input->getArgument("config_file_path");
         $fs = new Filesystem();
