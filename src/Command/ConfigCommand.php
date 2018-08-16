@@ -7,27 +7,33 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Filesystem\Filesystem;
+use Cto\Rabbit\Message\Message;
 
 class ConfigCommand extends RabbitCommand
 {
     public function configure()
     {
-        $this->setName("rabbit:config");
-        $this->addArgument("config_file_path", InputArgument::REQUIRED, "配置参数");
+        $this->setName(Message::CONFIG_COMMAND);
+        $this->addArgument(Message::CONFIG_PARAMETER, InputArgument::REQUIRED, Message::CONFIG);
+        $this->setDescription(Message::CONFIG_DESCRIPTION);
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $input->getArgument("config_file_path");
+        $root = trim($input->getArgument(Message::CONFIG_PARAMETER));
+        if ($root[strlen($root) - 1] != DIRECTORY_SEPARATOR) {
+            $root .= DIRECTORY_SEPARATOR;
+        }
         $fs = new Filesystem();
-        if (!$fs->exists($config)) {
-            $output->writeln($this->error("file $config not exists"));
+        if (!is_dir($root)) {
+            $output->writeln($this->error("path $root not exists"));
+            return;
         }
-        $localConfigFile = dirname(dirname(dirname(__FILE__))) . '/rabbit_config';
-        if ($fs->exists($localConfigFile)) {
-            $fs->remove($localConfigFile);
+        $localConfigFile = dirname(dirname(dirname(__FILE__))) . '/config';
+        if (!$fs->exists($localConfigFile)) {
+            $fs->touch($localConfigFile);
         }
-        $fs->symlink($config, $localConfigFile);
-        $fs->exists($localConfigFile) ? $output->writeln($this->info("config success")) : $output->writeln($this->error("config error"));
+        file_put_contents($localConfigFile, $root);
+        $output->writeln($this->info(Message::SUCCESS));
     }
 }

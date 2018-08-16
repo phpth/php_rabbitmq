@@ -50,6 +50,14 @@ class Message
 
     const FORCE_PARAMETER = "force";
 
+    const CONFIG_PARAMETER = "project_root";
+
+    const CONFIG = "project root path";
+
+    CONST CONFIG_DESCRIPTION = "init project root path for php_rabbitmq";
+
+    const CONFIG_COMMAND ="rabbit:config";
+
     const DECLARE_ALL_COMMAND = "rabbit:declare-all";
     
     const DECLARE_ALL_DESCRIPTION = "generate all the queues,exchanges,bindings in configuration file";

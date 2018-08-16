@@ -6,6 +6,7 @@ use Symfony\Component\Yaml\Yaml;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
+use Symfony\Component\Filesystem\Filesystem;
 
 
 class RabbitHelper
@@ -199,10 +200,20 @@ class RabbitHelper
         }
     }
 
+    public static function locateRabbitConfig()
+    {
+        $localConfigPath = dirname(dirname(dirname(__FILE__))) . '/config';
+        $fs = new Filesystem;
+        if (!$fs->exists($localConfigPath)) {
+            throw new \Exception("missing rabbitmq config file");
+        }
+        $projectRootPath = file_get_contents($localConfigPath);
+        return $projectRootPath;
+    }
+
     public static function locateRabbitConfigFile()
     {
-        $configFilePath = dirname(dirname(dirname(__FILE__))) . '/rabbit_config';
-        return $configFilePath;
+        return self::locateRabbitConfig() . 'rabbit.yml';
     }
 
     public static function publish($publisher, $message, $attribute = [])
@@ -220,6 +231,11 @@ class RabbitHelper
 
     public static function consume($consumer)
     {
+        $projectAutoloaderFile = self::locateRabbitConfig() . 'vendor/autoload.php';
+        if (!$projectAutoloaderFile) {
+            throw new \Exception("project autuload not found");
+        }
+        require_once($projectAutoloaderFile);
         self::checkConfigIsLoaded();
         $consumerInfo = self::extractConsumer($consumer);
         $conn = self::getConnection($consumerInfo['connection']);
@@ -231,10 +247,13 @@ class RabbitHelper
             $consumerInfo['consumer']['no_ack'],
             false,
             false,
-            [$composerInfo['consumer']['callback'], "execute"],
+            [$consumerInfo['consumer']['callback'], "execute"],
             null,
             []
         );
+        while (count($chan->callbacks)) {
+            $chan->wait();
+        }
     }
 
     public static function extractPublisher($publisher)

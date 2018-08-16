@@ -6,7 +6,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 abstract class AbstractConsumer
 {
-    public static function execute(AMQPMessage $message)
+    public function execute(AMQPMessage $message)
     {
         $result = self::consume($message);
         $chan = $message->delivery_info['channel'];
