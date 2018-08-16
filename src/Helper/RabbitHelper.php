@@ -55,6 +55,11 @@ class RabbitHelper
 
     public static function getConfig()
     {
+        $projectAutoloaderFile = self::locateRabbitConfig() . 'vendor/autoload.php';
+        if (!$projectAutoloaderFile) {
+            throw new \Exception("project autuload not found");
+        }
+        require_once($projectAutoloaderFile);
         $file = self::locateRabbitConfigFile();
         $config = Yaml::parseFile($file);
         return $config;
@@ -231,11 +236,6 @@ class RabbitHelper
 
     public static function consume($consumer)
     {
-        $projectAutoloaderFile = self::locateRabbitConfig() . 'vendor/autoload.php';
-        if (!$projectAutoloaderFile) {
-            throw new \Exception("project autuload not found");
-        }
-        require_once($projectAutoloaderFile);
         self::checkConfigIsLoaded();
         $consumerInfo = self::extractConsumer($consumer);
         $conn = self::getConnection($consumerInfo['connection']);
