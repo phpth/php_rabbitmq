@@ -240,6 +240,7 @@ class RabbitHelper
         $consumerInfo = self::extractConsumer($consumer);
         $conn = self::getConnection($consumerInfo['connection']);
         $chan = $conn->channel();
+        $callback = new $consumerInfo['consumer']['callback'];
         $chan->basic_consume(
             $consumerInfo['consumer']['queue'],
             '',
@@ -247,7 +248,7 @@ class RabbitHelper
             $consumerInfo['consumer']['no_ack'],
             false,
             false,
-            [$consumerInfo['consumer']['callback'], "execute"],
+            [$callback, "execute"],
             null,
             []
         );
