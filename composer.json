@@ -19,8 +19,5 @@
             "Cto\\Rabbit\\": "./src"
         }
     },
-    "bin": ["rabbit_manager"],
-    "config": {
-        "bin-dir": "bin"
-    }
+    "bin": ["rabbit_manager"]
 }
