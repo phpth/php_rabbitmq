@@ -25,7 +25,9 @@
 
     2.消费者回调需要能够被composer的autoload.php自动导入
 
-    3.vendor/bin/rabbit_manager rabbit:consume your_consumer_name
+    3.消费者回调继承Cto\Rabbit\Consumer\AbstractConsumer,实现consumer方法
+
+    4.vendor/bin/rabbit_manager rabbit:consume your_consumer_name
 
 4. todo
 
