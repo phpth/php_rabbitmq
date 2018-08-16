@@ -18,7 +18,7 @@
             "Cto\\Rabbit\\": "./src"
         }
     },
-    "bin": ["queue_manager"],
+    "bin": ["rabbit_manager"],
     "extra": {
         "rabbitmq_config_file": "/home/xiakai/www/cto_rabbit/rabbitmq.example.yml"
     }
