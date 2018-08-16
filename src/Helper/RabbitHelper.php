@@ -201,10 +201,8 @@ class RabbitHelper
 
     public static function locateRabbitConfigFile()
     {
-        $composerJsonPath = dirname(dirname(dirname(__FILE__))) . '/rabbit_config';
-        $composerJson = file_get_contents($composerJsonPath);;
-        $composerInfo = json_decode($composerJson, true);
-        return $composerInfo['extra']['rabbitmq_config_file'];
+        $configFilePath = dirname(dirname(dirname(__FILE__))) . '/rabbit_config';
+        return $configFilePath;
     }
 
     public static function publish($publisher, $message, $attribute = [])

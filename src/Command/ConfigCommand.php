@@ -25,7 +25,7 @@ class ConfigCommand extends RabbitCommand
         }
         $localConfigFile = dirname(dirname(dirname(__FILE__))) . '/rabbit_config';
         if ($fs->exists($localConfigFile)) {
-            $fs->remove($$localConfigFile);
+            $fs->remove($localConfigFile);
         }
         $fs->symlink($config, $localConfigFile);
         $fs->exists($localConfigFile) ? $output->writeln($this->info("config success")) : $output->writeln($this->error("config error"));
