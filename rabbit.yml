@@ -1,0 +1,56 @@
+rabbitmq:
+  default_connection: ~
+  connections:
+    connection1:
+      host: localhost
+      port: 5672
+      user: guest
+      password: guest
+      vhost: /
+      connection_timeout: 30
+      read_write_timeout: 30
+      heartbeat: 10
+
+      queues:
+          q1:
+            name: q1
+            passive: false
+            durable: true
+            exclusive: false
+            auto_delete: false
+            nowait: ~
+            arguments: ~
+            ticket: ~
+      
+      exchanges:
+          e1:
+            name: e1
+            type: direct
+            passive: false
+            durable: true
+            auto_delete: false
+            internal: ~
+            nowait: ~
+            arguments: ~
+            ticket: ~
+
+      bindings:
+          binding1:
+            queue: q1
+            exchange: e1
+            routing_key: hello-world
+
+      consumers:
+          consumer1:
+            queue: q2 
+            callback: \AppBundle\Consumer\MainConsumer
+            qos_prefetch_size: ~
+            qos_prefetch_count: ~
+            no_ack: ~
+
+      publishers:
+          publisher1:
+            routing_key: hello-world
+            exchange: e1
+            delivery_mode: 2  
+
