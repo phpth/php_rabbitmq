@@ -1,5 +1,5 @@
 rabbitmq:
-  default_connection: ~
+  default_connection: connection1
   connections:
     connection1:
       host: localhost
