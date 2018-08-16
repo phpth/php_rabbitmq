@@ -6,7 +6,6 @@ use Symfony\Component\Yaml\Yaml;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
-use Symfony\Component\Filesystem\Filesystem;
 
 
 class RabbitHelper
@@ -208,8 +207,7 @@ class RabbitHelper
     public static function locateRabbitConfig()
     {
         $localConfigPath = dirname(dirname(dirname(__FILE__))) . '/config';
-        $fs = new Filesystem;
-        if (!$fs->exists($localConfigPath)) {
+        if (!file_exists($localConfigPath)) {
             throw new \Exception("missing rabbitmq config file");
         }
         $projectRootPath = file_get_contents($localConfigPath);
