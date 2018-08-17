@@ -253,6 +253,8 @@ class RabbitHelper
         while (count($chan->callbacks)) {
             $chan->wait();
         }
+        $chan->close();
+        $conn->close();
     }
 
     public static function extractPublisher($publisher)
