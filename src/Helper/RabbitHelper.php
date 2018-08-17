@@ -272,11 +272,11 @@ class RabbitHelper
         $config = self::$config['rabbitmq']['connections'];
         foreach ($config as $connName => $connArray) {
             $producers = $connArray['publishers'];
-            if (!isset($producers[$publisher])) {
-                throw new \Exception("producer not found");
+            if (isset($producers[$publisher])) {
+                return ['connection' => $connName, 'producer' => $producers[$publisher]];
             }
-            return ['connection' => $connName, 'producer' => $producers[$publisher]];
         }
+        throw new \Exception("producer not found");
     }
 
     public static function extractConsumer($consumer)
@@ -284,10 +284,10 @@ class RabbitHelper
         $config = self::$config['rabbitmq']['connections'];
         foreach ($config as $connName => $connArray) {
             $consumers = $connArray['consumers'];
-            if (!isset($consumers[$consumer])) {
-                throw new \Exception("consumer not found");
+            if (isset($consumers[$consumer])) {
+                return ['connection' => $connName, 'consumer' => $consumers[$consumer]];
             }
-            return ['connection' => $connName, 'consumer' => $consumers[$consumer]];
         }
+        throw new \Exception("consumer not found");
     }
 }
