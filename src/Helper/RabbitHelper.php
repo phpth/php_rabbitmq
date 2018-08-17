@@ -253,7 +253,7 @@ class RabbitHelper
             $consumerInfo['consumer']['queue'],
             '',
             false,
-            $consumerInfo['consumer']['no_ack'],
+            $consumerInfo['consumer']['no_ack'] !== null ? $consumerInfo['consumer']['no_ack'] : false,
             false,
             false,
             [$callback, "execute"],
