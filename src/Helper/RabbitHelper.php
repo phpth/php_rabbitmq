@@ -52,6 +52,11 @@ class RabbitHelper
         'ticket' => null
     ];
 
+    public static $defaultQosConfig = [
+        'qos_prefetch_size' => null,
+        'qos_prefetch_count' => 1
+    ];
+
     public static function getConfig()
     {
         $projectAutoloaderFile = self::locateRabbitConfig() . 'vendor/autoload.php';
@@ -238,6 +243,11 @@ class RabbitHelper
         $consumerInfo = self::extractConsumer($consumer);
         $conn = self::getConnection($consumerInfo['connection']);
         $chan = $conn->channel();
+        $chan->basic_qos(
+            $consumerInfo['consumer']['qos_prefetch_size'] !== null ? $consumerInfo['consumer']['qos_prefetch_size'] : self::$defaultQosConfig['qos_prefetch_size'],
+            $consumerInfo['consumer']['qos_prefetch_count'] !== null ? $consumerInfo['consumer']['qos_prefetch_count'] : self::$defaultQosConfig['qos_prefetch_count'],
+            null
+        );
         $callback = new $consumerInfo['consumer']['callback'];
         $chan->basic_consume(
             $consumerInfo['consumer']['queue'],
