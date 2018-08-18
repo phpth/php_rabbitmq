@@ -230,7 +230,7 @@ class RabbitHelper
         $producerInfo = self::extractPublisher($publisher);
         $conn = self::getConnection($producerInfo['connection']);
         $chan = $conn->channel();
-        $msg = new AMQPMessage($message, ['delivery_mode' => $producerInfo['producer']['delivery_mode'] ? : 2]);
+        $msg = new AMQPMessage($message, ['delivery_mode' => $producerInfo['producer']['delivery_mode'] !== null ? $producerInfo['producer']['delivery_mode'] : 2]);
         $msg->set("application_headers", new AMQPTable($attribute));
         $chan->basic_publish($msg, $producerInfo['producer']['exchange'], $producerInfo['producer']['routing_key']);
         $chan->close();
