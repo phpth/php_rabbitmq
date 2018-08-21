@@ -99,7 +99,7 @@ class RabbitHelper
                 $connectionDetail['heartbeat'] !== null ? $connectionDetail['heartbeat'] : self::$defaultConnectionConfig['heartbeat']
             );
         } catch (\Exception $e) {
-            return null;
+            exit("Error in connecting to rabbitmq-server" . PHP_EOL);
         }
         return $conn;
     }
