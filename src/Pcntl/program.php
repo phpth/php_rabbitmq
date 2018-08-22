@@ -1,6 +1,7 @@
 [program:<?= $consumer_name ?>]
 command=<?= $consumer_command ?>
 numprocs=<?= $consumer_num ?>
+process_name=%(program_name)s_349%(process_num)01d
 <?php
 if (isset($consumer_out_log)) {
 ?>
