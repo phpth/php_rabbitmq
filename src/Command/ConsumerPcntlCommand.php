@@ -61,7 +61,7 @@ class ConsumerPcntlConsumer extends Command
         $consumerNumProcs = $consumerDetail['num_procs'] !== null ? $consumerDetail['num_procs'] : 1;
 
         $configValArray = [
-            'consumer_name' => $consumer,
+            'consumer_name' => "$connection_$consumer",
             'consumer_command' => $consumerCommand,
             'consumer_num' => $consumerNumProcs,
             'consumer_autostart' => $consumerDetail['autostart'] !== null ? $consumerDetail['autostart'] : true,
@@ -80,22 +80,28 @@ class ConsumerPcntlConsumer extends Command
 
     private function start($consumer, $connection)
     {
-        
+        $this->checkPcntlConfigExist($consumer);
+        $cmd = sprintf("/usr/bin/supervisorctl -c %s start %s", $this->pcntlPath . '/supervisord.conf', "$connection_$consumer");
+        $this->runCommand($cmd);
     }
 
     private function stop($consumer, $connection)
     {
-
+        $this->checkPcntlConfigExist($consumer);
+        $cmd = sprintf("/usr/bin/supervisorctl -c %s stop %s", $this->pcntlPath . '/supervisord.conf', "$connection_$consumer");
+        $this->runCommand($cmd);
     }
 
-    private function reload($consumer, $connection)
+    private function reload($consumer = null, $connection = null)
     {
-        $cmd = sprintf();
+        $this->checkPcntlConfigExist($consumer);
+        $cmd = sprintf("/usr/bin/supervisorctl -c %s reload", $this->pcntlPath . '/supervisord.conf');
+        $this->runCommand($cmd);
     }
 
     private function status($consumer, $connection)
     {
-
+        // $this->checkPcntlConfigExist($consumer);
     }
 
     private function getConsumerDetail($consumer, $connection)
@@ -105,5 +111,19 @@ class ConsumerPcntlConsumer extends Command
             throw new \Exception("consumer $consumer not exits");
         }
         return $config['rabbitmq']['connections'][$connection]['consumers'][$consumer];
+    }
+
+    private function checkPcntlConfigExist($consumer)
+    {
+        $configPath = sprintf("%s/Conf/%s.ini", $this->pcntlPath, $consumer);
+        if (!file_exists($configPath)) {
+            throw new \Exception("config file not found, init first");
+        }
+    }
+
+    private function runCommand($cmd)
+    {
+        $proc = new Process($cmd);
+        $proc->run();
     }
 }
