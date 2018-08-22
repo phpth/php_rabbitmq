@@ -5,9 +5,9 @@
 
     1.安装包
 
-    3.项目根目录下配置rabbit.yml,具体样式参照php_rabbit包根目录下的rabbit.yml
+    2.项目根目录下配置rabbit.yml,具体样式参照php_rabbit包根目录下的rabbit.yml
 
-    4.生成队列: vendor/bin/rabbit_manager rabbit:declare-all
+    3.生成队列: vendor/bin/rabbit_manager rabbit:declare-all
 
 2. 发送消息:
 
