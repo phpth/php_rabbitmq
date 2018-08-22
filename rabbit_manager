@@ -15,6 +15,7 @@ use Cto\Rabbit\Command\DeleteQueueCommand;
 use Cto\Rabbit\Command\PurgeQueueCommand;
 use Cto\Rabbit\Command\ConsumerCommand;
 use Cto\Rabbit\Command\ConfigCommand;
+use Cto\Rabbit\Command\ConsumerPcntlConsumer;
 
 $app = new Application("rabbit queue manager", "0.1.0");
 $app->add(new DeclareAllCommand());
@@ -28,4 +29,5 @@ $app->add(new DeleteQueueCommand());
 $app->add(new PurgeQueueCommand());
 $app->add(new ConsumerCommand());
 $app->add(new ConfigCommand());
+$app->add(new ConsumerPcntlConsumer());
 $app->run();

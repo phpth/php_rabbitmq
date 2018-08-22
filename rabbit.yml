@@ -42,11 +42,17 @@ rabbitmq:
 
       consumers:
           consumer1:
-            queue: q2 
-            callback: \AppBundle\Consumer\MainConsumer
+            queue: q1
+            callback: MainConsumer
             qos_prefetch_size: ~
             qos_prefetch_count: ~
             no_ack: ~
+            num_procs: ~
+            autostart: ~
+            autorestart: ~
+            startsecs: ~
+            out_log: ~
+            error_log: ~
 
       publishers:
           publisher1:
