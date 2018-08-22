@@ -101,7 +101,9 @@ class ConsumerPcntlConsumer extends Command
 
     private function status($consumer, $connection)
     {
-        // $this->checkPcntlConfigExist($consumer);
+        $this->checkPcntlConfigExist($consumer);
+        $cmd = sprintf("/usr/bin/supervisorctl -c %s status %s | grep %s | grep -v grep | awk '{print $2}'", $this->pcntlPath . '/supervisord.conf', "$connection_$consumer", "$connection_$consumer");
+        $status = $this->runCommand($cmd);
     }
 
     private function getConsumerDetail($consumer, $connection)
@@ -125,5 +127,6 @@ class ConsumerPcntlConsumer extends Command
     {
         $proc = new Process($cmd);
         $proc->run();
+        return $proc->getOutput();
     }
 }
