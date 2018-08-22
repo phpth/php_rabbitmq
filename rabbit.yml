@@ -42,7 +42,7 @@ rabbitmq:
 
       consumers:
           consumer1:
-            queue: q2 
+            queue: q1
             callback: \AppBundle\Consumer\MainConsumer
             qos_prefetch_size: ~
             qos_prefetch_count: ~

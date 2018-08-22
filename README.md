@@ -5,8 +5,6 @@
 
     1.安装包
 
-    2.配置项目根目录: vendor/bin/rabbit_manager rabbit:config your_project_root_path
-
     3.项目根目录下配置rabbit.yml,具体样式参照php_rabbit包根目录下的rabbit.yml
 
     4.生成队列: vendor/bin/rabbit_manager rabbit:declare-all
