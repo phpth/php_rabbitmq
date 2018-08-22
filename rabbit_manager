@@ -1,7 +1,16 @@
 #!/usr/bin/env php
 <?php
 
-require_once dirname(__FILE__) . '/vendor/autoload.php';
+$autoloadFileArray = [
+    __DIR__ . '/vendor/autoload.php',
+    __DIR__ . '/../../autoload.php'
+];
+
+foreach ($autoloadFileArray as $autoloadFile) {
+    if (file_exists($autoloadFile)) {
+        require_once $autoloadFile;
+    }
+}
 
 use Symfony\Component\Console\Application;
 use Cto\Rabbit\Command\DeclareAllCommand;
@@ -27,5 +36,4 @@ $app->add(new DeleteExchangeCommand());
 $app->add(new DeleteQueueCommand());
 $app->add(new PurgeQueueCommand());
 $app->add(new ConsumerCommand());
-$app->add(new ConfigCommand());
 $app->run();

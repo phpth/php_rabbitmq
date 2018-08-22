@@ -59,12 +59,17 @@ class RabbitHelper
 
     public static function getConfig()
     {
-        $projectAutoloaderFile = self::locateRabbitConfig() . 'vendor/autoload.php';
-        if (!$projectAutoloaderFile) {
-            throw new \Exception("project autuload not found");
+        $autoloadFileArray = [
+            __DIR__ . '/../../vendor/autoload.php',
+            __DIR__ . '/../../../../autoload.php'
+        ];
+
+        foreach ($autoloadFileArray as $autoloadFile) {
+            if (file_exists($autoloadFile)) {
+                require_once $autoloadFile;
+            }
         }
-        require_once($projectAutoloaderFile);
-        $file = self::locateRabbitConfigFile();
+        $file = __DIR__ . '/../../../../../rabbit.yml';
         $config = Yaml::parseFile($file);
         return $config;
     }
@@ -207,21 +212,6 @@ class RabbitHelper
         if (!self::$config) {
             self::init();
         }
-    }
-
-    public static function locateRabbitConfig()
-    {
-        $localConfigPath = dirname(dirname(dirname(__FILE__))) . '/config';
-        if (!file_exists($localConfigPath)) {
-            throw new \Exception("missing rabbitmq config file");
-        }
-        $projectRootPath = file_get_contents($localConfigPath);
-        return $projectRootPath;
-    }
-
-    public static function locateRabbitConfigFile()
-    {
-        return self::locateRabbitConfig() . 'rabbit.yml';
     }
 
     public static function publish($publisher, $message, $attribute = [])
