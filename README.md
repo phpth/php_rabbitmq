@@ -1,7 +1,7 @@
 ### php_rabbit使用教程
 ---
 
-1. 入门
+1. 初始化
 
     1.安装包
 
@@ -25,10 +25,28 @@
 
     3.消费者回调继承Cto\Rabbit\Consumer\AbstractConsumer,实现consumer方法
 
-    4.vendor/bin/rabbit_manager rabbit:consume your_consumer_name
+    4.vendor/bin/rabbit_manager rabbit:consume consumer_name
 
-4. todo
+4. 消费者进程配置基础:
 
-    1.测试、调试
+    1.配置consumer的num_procs等参数，具体参数可参考php_rabbit下的rabbit.yml
 
-    2.整合supervisorr消费者
+    2.vendor/bin/rabbit_manager rabbit:consumer:pcntl config consumer_name生成consumer_name的进程配置文件
+
+    3.vendor/bin/rabbit_manager rabbit:consumer:pcntl init consumer_name初始化进程管理器
+
+    4.vendor/bin/rabbit_manager rabbit:consumer:pcntl start consumer_name启动指定配置的consumer
+
+    5.vendor/bin/rabbit_manager rabbit:consumer:pcntl status consumer_name显示指定消费者的状态
+
+    6.vendor/bin/rabbit_manager rabbit:consumer:pcntl stop consumer_name停止消费者
+
+5. 更新消费者进程配置: 
+
+    1.修改rabbit.yml
+
+    2.vendor/bin/rabbit_manager rabbit:consumer:pcntl config consumer_name
+
+    3.vendor/bin/rabbit_manager rabbit:consumer:pcntl reload consumer_name
+
+    4.vendor/bin/rabbit_manager rabbit:consumer:pcntl start consumer_name
