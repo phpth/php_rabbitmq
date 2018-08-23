@@ -23,7 +23,7 @@ class ConsumerPcntlCommand extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->pcntlPath = __DIR__ . '/../Pcntl';   
+        $this->pcntlPath = __DIR__ . '/../Pcntl';
     }
 
     public function configure()
@@ -31,7 +31,7 @@ class ConsumerPcntlCommand extends Command
         $this->setName("rabbit:consumer:pcntl");
         $this->addArgument("action", InputArgument::REQUIRED, sprintf("supported actions: %s", implode(" ", self::$supportedAction)));
         $this->addArgument("param", InputArgument::OPTIONAL, "action parameter");
-        $this->addArgument("connnection", InputArgument::OPTIONAL, "connection");
+        $this->addArgument("connection", InputArgument::OPTIONAL, "connection");
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
@@ -44,7 +44,8 @@ class ConsumerPcntlCommand extends Command
         call_user_func_array([$this, $action], [$param, $connection]);
     }
 
-    private function checkActionSuppored($action) {
+    private function checkActionSuppored($action)
+    {
         if (!in_array($action, self::$supportedAction)) {
             throw new \Exception("unsupported action");
         }
@@ -54,14 +55,14 @@ class ConsumerPcntlCommand extends Command
     {
         $consumerDetail = $this->getConsumerDetail($consumer, $connection);
 
-        $configTemplateLoader = new FilesystemLoader($this->pcntlPath);
+        $configTemplateLoader = new FilesystemLoader($this->pcntlPath . '/%name%');
         $templating = new PhpEngine(new TemplateNameParser(), $configTemplateLoader);
 
-        $consumerCommand = sprintf('%s rabbit:consume %s', __DIR__ . '/../../rabbit_manager', $consumer);
+        $consumerCommand = sprintf('%s rabbit:consume-queue %s', realpath(__DIR__ . '/../../rabbit_manager'), $consumer);
         $consumerNumProcs = $consumerDetail['num_procs'] !== null ? $consumerDetail['num_procs'] : 1;
 
         $configValArray = [
-            'consumer_name' => "$connection_$consumer",
+            'consumer_name' => sprintf("%s_%s", $connection, $consumer),
             'consumer_command' => $consumerCommand,
             'consumer_num' => $consumerNumProcs,
             'consumer_autostart' => $consumerDetail['autostart'] !== null ? $consumerDetail['autostart'] : true,
@@ -76,19 +77,21 @@ class ConsumerPcntlCommand extends Command
 
         $targetConfigFile = sprintf("%s/Conf/%s.ini", $this->pcntlPath, $consumer);
         file_put_contents($targetConfigFile, $config);
+
+        $this->renderPcntlConfig();
     }
 
     private function start($consumer, $connection)
     {
         $this->checkPcntlConfigExist($consumer);
-        $cmd = sprintf("/usr/bin/supervisorctl -c %s start %s", $this->pcntlPath . '/supervisord.conf', "$connection_$consumer");
+        $cmd = sprintf("/usr/bin/supervisord -n -c %s", $this->pcntlPath . '/supervisord.conf');
         $this->runCommand($cmd);
     }
 
     private function stop($consumer, $connection)
     {
         $this->checkPcntlConfigExist($consumer);
-        $cmd = sprintf("/usr/bin/supervisorctl -c %s stop %s", $this->pcntlPath . '/supervisord.conf', "$connection_$consumer");
+        $cmd = sprintf("/usr/bin/supervisorctl -c %s stop %s", $this->pcntlPath . '/supervisord.conf', sprintf("%s_%s", $connection, $consumer));
         $this->runCommand($cmd);
     }
 
@@ -102,7 +105,7 @@ class ConsumerPcntlCommand extends Command
     private function status($consumer, $connection)
     {
         $this->checkPcntlConfigExist($consumer);
-        $cmd = sprintf("/usr/bin/supervisorctl -c %s status %s | grep %s | grep -v grep | awk '{print $2}'", $this->pcntlPath . '/supervisord.conf', "$connection_$consumer", "$connection_$consumer");
+        $cmd = sprintf("/usr/bin/supervisorctl -c %s status %s | grep %s | grep -v grep | awk '{print $2}'", $this->pcntlPath . '/supervisord.conf', sprintf("%s_%s", $connection, $consumer), sprintf("%s_%s", $connection, $consumer));
         $status = $this->runCommand($cmd);
     }
 
@@ -128,5 +131,18 @@ class ConsumerPcntlCommand extends Command
         $proc = new Process($cmd);
         $proc->run();
         return $proc->getOutput();
+    }
+
+    private function renderPcntlConfig()
+    {
+        $fileLoader = new FilesystemLoader($this->pcntlPath . '/%name%');
+        $templating = new PhpEngine(new TemplateNameParser, $fileLoader);
+        $targetConfigContent = $templating->render("supervisord.conf.tpl", [
+            "sock_path" => realpath($this->pcntlPath) . '/Run/supervisord.sock',
+            "log_file" => realpath($this->pcntlPath) . '/Log/consumer.log',
+            "pid_file" => realpath($this->pcntlPath) . '/Run/supervisord.pid',
+            "config_pattern" => realpath($this->pcntlPath) . '/Conf/*.ini'
+        ]);
+        file_put_contents($this->pcntlPath . '/supervisord.conf', $targetConfigContent);
     }
 }
