@@ -14,7 +14,7 @@ use Cto\Rabbit\Helper\RabbitHelper;
 
 class ConsumerPcntlCommand extends Command
 {
-    public static $supportedAction = ['init', 'start', 'stop', 'reload'];
+    public static $supportedAction = ['config', 'init', 'start', 'stop', 'reload', 'status'];
 
     public static $config;
 
@@ -51,7 +51,7 @@ class ConsumerPcntlCommand extends Command
         }
     }
 
-    private function init($consumer, $connection)
+    private function config($consumer, $connection)
     {
         $consumerDetail = $this->getConsumerDetail($consumer, $connection);
 
@@ -65,13 +65,13 @@ class ConsumerPcntlCommand extends Command
             'consumer_name' => sprintf("%s_%s", $connection, $consumer),
             'consumer_command' => $consumerCommand,
             'consumer_num' => $consumerNumProcs,
-            'consumer_autostart' => $consumerDetail['autostart'] !== null ? $consumerDetail['autostart'] : true,
-            'consumer_autorestart' => $consumerDetail['autorestart'] !== null ? $consumerDetail['autorestart'] : true,
-            'consumer_startsecs' => $consumerDetail['startsecs'] !== null ? $consumerDetail['startsecs'] : 30
+            'consumer_autostart' => isset($consumerDetail['autostart']) && $consumerDetail['autostart'] !== null ? $consumerDetail['autostart'] : true,
+            'consumer_autorestart' => isset($consumerDetail['autorestart']) && $consumerDetail['autorestart'] !== null ? $consumerDetail['autorestart'] : true,
+            'consumer_startsecs' => isset($consumerDetail['startsecs']) && $consumerDetail['startsecs'] !== null ? $consumerDetail['startsecs'] : 10
         ];
 
-        $consumerDetail['out_log'] !== null && $configValArray['consumer_out_log'] = $consumerDetail['out_log'];
-        $consumerDetail['error_log'] !== null && $configValArray['consumer_error_log'] = $consumerDetail['error_log'];
+        isset($consumerDetail['out_log']) && $consumerDetail['out_log'] !== null && $configValArray['consumer_out_log'] = $consumerDetail['out_log'];
+        isset($consumerDetail['error_log']) && $consumerDetail['error_log'] !== null && $configValArray['consumer_error_log'] = $consumerDetail['error_log'];
 
         $config = $templating->render("program.php", $configValArray);
 
@@ -81,18 +81,33 @@ class ConsumerPcntlCommand extends Command
         $this->renderPcntlConfig();
     }
 
+    private function init($consumer, $connection)
+    {
+        $this->checkPcntlConfigExist($consumer);
+        $cmd = sprintf("/usr/bin/supervisord -c %s", $this->pcntlPath . '/supervisord.conf');
+        $this->runCommand($cmd);
+    }
+
     private function start($consumer, $connection)
     {
         $this->checkPcntlConfigExist($consumer);
-        $cmd = sprintf("/usr/bin/supervisord -n -c %s", $this->pcntlPath . '/supervisord.conf');
-        $this->runCommand($cmd);
+        $procNum = $this->getConsumerProcNum($consumer, $connection);
+        for ($i = 0; $i < $procNum; $i++) {
+            $cmd = sprintf("/usr/bin/supervisorctl -c %s start %s", $this->pcntlPath . '/supervisord.conf', sprintf("%s_%s:%s_%s_%02d", $connection, $consumer, $connection, $consumer, $i));
+            $this->runCommand($cmd);
+        }
+        $this->status($consumer, $connection);
     }
 
     private function stop($consumer, $connection)
     {
         $this->checkPcntlConfigExist($consumer);
-        $cmd = sprintf("/usr/bin/supervisorctl -c %s stop %s", $this->pcntlPath . '/supervisord.conf', sprintf("%s_%s", $connection, $consumer));
-        $this->runCommand($cmd);
+        $procNum = $this->getConsumerProcNum($consumer, $connection);
+        for ($i = 0; $i < $procNum; $i++) {
+            $cmd = sprintf("/usr/bin/supervisorctl -c %s stop %s", $this->pcntlPath . '/supervisord.conf', sprintf("%s_%s:%s_%s_%02d", $connection, $consumer, $connection, $consumer, $i));
+            $this->runCommand($cmd);
+        }
+        $this->status($consumer, $connection);
     }
 
     private function reload($consumer = null, $connection = null)
@@ -105,8 +120,12 @@ class ConsumerPcntlCommand extends Command
     private function status($consumer, $connection)
     {
         $this->checkPcntlConfigExist($consumer);
-        $cmd = sprintf("/usr/bin/supervisorctl -c %s status %s | grep %s | grep -v grep | awk '{print $2}'", $this->pcntlPath . '/supervisord.conf', sprintf("%s_%s", $connection, $consumer), sprintf("%s_%s", $connection, $consumer));
-        $status = $this->runCommand($cmd);
+        $procNum = $this->getConsumerProcNum($consumer, $connection);
+        for ($i = 0; $i < $procNum; $i++) {
+            $cmd = sprintf("/usr/bin/supervisorctl -c %s status %s", $this->pcntlPath . '/supervisord.conf', sprintf("%s_%s:%s_%s_%02d", $connection, $consumer, $connection, $consumer, $i));
+            $status = $this->runCommand($cmd);
+            echo $status;
+        }
     }
 
     private function getConsumerDetail($consumer, $connection)
@@ -144,5 +163,12 @@ class ConsumerPcntlCommand extends Command
             "config_pattern" => realpath($this->pcntlPath) . '/Conf/*.ini'
         ]);
         file_put_contents($this->pcntlPath . '/supervisord.conf', $targetConfigContent);
+    }
+
+    private function getConsumerProcNum($consumer, $connection)
+    {
+        $consumerDetail = $this->getConsumerDetail($consumer, $connection);
+        $procNum = isset($consumerDetail['num_procs']) && $consumerDetail['num_procs'] !== null ? $consumerDetail['num_procs'] : 1;
+        return $procNum;
     }
 }
