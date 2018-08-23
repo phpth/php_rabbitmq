@@ -18,7 +18,10 @@
     "autoload": {
         "psr-4": {
             "Cto\\Rabbit\\": "./src"
-        }
+        },
+        "files": [
+            "MainConsumer.php"
+        ]
     },
     "bin": ["rabbit_manager"]
 }
