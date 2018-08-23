@@ -59,7 +59,7 @@ class ConsumerPcntlCommand extends Command
         $templating = new PhpEngine(new TemplateNameParser(), $configTemplateLoader);
 
         $consumerCommand = sprintf('%s rabbit:consume-queue %s', realpath(__DIR__ . '/../../rabbit_manager'), $consumer);
-        $consumerNumProcs = $consumerDetail['num_procs'] !== null ? $consumerDetail['num_procs'] : 1;
+        $consumerNumProcs = isset($consumerDetail['num_procs']) && $consumerDetail['num_procs'] !== null ? $consumerDetail['num_procs'] : 1;
 
         $configValArray = [
             'consumer_name' => sprintf("%s_%s", $connection, $consumer),
